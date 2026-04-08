@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
+    <meta charset="UTF-8">
+    <title>SportStock - Panel de Control</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Agregué este bloque aquí por si no quieres tocar el archivo .css aparte, 
+           esto hace que la magia de las pestañas funcione */
+        .tab-content { display: none; }
+        
+        #t-dash:checked ~ .container #dash,
+        #t-inv:checked ~ .container #inv,
+        #t-usr:checked ~ .container #usr { 
+            display: block; 
+        }
+
+        /* Estilo para que los labels se vean como tus botones anteriores */
+        .nav-links label {
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        #t-dash:checked ~ nav label[for="t-dash"],
+        #t-inv:checked ~ nav label[for="t-inv"],
+        #t-usr:checked ~ nav label[for="t-usr"] {
+            background-color: #5f6d4d; /* Color verde oscuro del dashboard */
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <input type="radio" name="sections" id="t-dash" checked style="display:none;">
+    <input type="radio" name="sections" id="t-inv" style="display:none;">
+    <input type="radio" name="sections" id="t-usr" style="display:none;">
+
+    <div id="modalProduct" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color: var(--dark-green)">Nuevo Producto</h2>
+            <input type="text" id="p-name" placeholder="Nombre del producto">
+            <input type="text" id="p-brand" placeholder="Marca (Nike, Adidas, etc.)">
+            <input type="number" id="p-price" placeholder="Precio ($)">
+            <input type="number" id="p-qty" placeholder="Cantidad">
+            <select id="p-cat">
+                <option value="Fútbol">Fútbol</option>
+                <option value="Running">Running</option>
+                <option value="Tenis">Tenis</option>
+                <option value="Natación">Natación</option>
+            </select>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn-action btn-add" style="flex:1" onclick="saveProduct()">Guardar</button>
+                <button class="btn-action btn-del" style="flex:1" onclick="closeModal('modalProduct')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalUser" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color: var(--dark-green)">Registrar Usuario</h2>
+            <input type="text" id="u-name" placeholder="Nombre completo">
+            <input type="email" id="u-email" placeholder="usuario@ejemplo.com">
+            <select id="u-role">
+                <option value="Empleado">Empleado</option>
+                <option value="Admin">Administrador</option>
+            </select>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn-action btn-add" style="flex:1" onclick="saveUser()">Registrar</button>
+                <button class="btn-action btn-del" style="flex:1" onclick="closeModal('modalUser')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalLogout" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color: var(--dark-green)">¿Estás seguro que quieres cerrar sesión?</h3>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-action btn-add" style="flex:1" onclick="location.href='index.html'">Sí, salir</button>
+                <button class="btn-action btn-del" style="flex:1" onclick="closeModal('modalLogout')">No, volver</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalConfirm" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="confirm-text">¿Seguro que quieres eliminar este elemento?</h3>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-action btn-add" style="flex:1" id="confirm-yes">Sí, eliminar</button>
+                <button class="btn-action btn-del" style="flex:1" onclick="closeModal('modalConfirm')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <div><strong>SportStock</strong><br><small>Sistema de Inventario Deportivo</small></div>
+            <div class="nav-links">
+            <label for="t-dash" id="btn-dash">dashboard</label>
+            <label for="t-inv" id="btn-inv">Inventario</label>
+            <label for="t-usr" id="btn-usr">Usuarios</label>
+        </div>
+           <button onclick="window.location.href='index.html'" class="btn-action btn-del">cerrar sesión</button>
+    </nav>
+    <div class="container">
+        <div id="dash" class="tab-content">
+            <h2>Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><h4>Total Productos</h4><strong>198</strong><span>En 8 categorías</span></div>
+                <div class="stat-card"><h4>Valor Total</h4><strong>$13.803</strong><span>Inventario valorizado</span></div>
+                <div class="stat-card"><h4>Stock Bajo</h4><strong style="color:var(--text-red)">5</strong><span>Requieren atención</span></div>
+                <div class="stat-card"><h4>Artículos Únicos</h4><strong>12</strong><span>SKUs registrados</span></div>
+            </div>
+
+            <div class="list-section">
+                <h3>Alertas de Stock Bajo</h3>
+                <div class="list-item">
+                    <div class="info"><strong>Zapatillas Running Pro</strong><span>Running</span></div>
+                    <div style="color: var(--text-red); font-weight:bold;">8 uds. <small>Min: 15</small></div>
+                </div>
+                <div class="list-item">
+                    <div class="info"><strong>Gafas de Natación Anti-fog</strong><span>Natación</span></div>
+                    <div style="color: var(--text-red); font-weight:bold;">5 uds. <small>Min: 20</small></div>
+                </div>
+                <div class="list-item">
+                    <div class="info"><strong>Bicicleta de Montaña 29"</strong><span>Ciclismo</span></div>
+                    <div style="color: var(--text-red); font-weight:bold;">3 uds. <small>Min: 10</small></div>
+                </div>
+                <label for="t-inv" class="btn-action btn-view-all" style="text-align:center; display:block; text-decoration:none;">ver todos</label>
+            </div>
+
+            <div class="list-section">
+                <h3>Actividad Reciente</h3>
+                <div class="list-item">
+                    <div class="info"><strong>Balón de Fútbol Profesional</strong><span>Nike • Fútbol</span></div>
+                    <div><strong>$29.99</strong> <small>Stock: 45</small></div>
+                </div>
+                <div class="list-item">
+                    <div class="info"><strong>Raqueta de Tenis Carbon</strong><span>Wilson • Tenis</span></div>
+                    <div><strong>$149.99</strong> <small>Stock: 23</small></div>
+                </div>
+                <label for="t-inv" class="btn-action btn-view-all" style="text-align:center; display:block;">ver inventario</label>
+            </div>
+        </div>
+
+        <div id="inv" class="tab-content">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Inventario</h2>
+                <button class="btn-action btn-add" onclick="openModal('modalProduct')">+ agrega producto</button>
+            </div>
+            <table id="table-inv">
+                <thead>
+                    <tr><th>Producto</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Acción</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Balón de Fútbol</td><td>Nike</td><td>$29.99</td><td>45</td><td><button class="btn-del btn-action" onclick="askDelete(this, 'producto')">Eliminar</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="usr" class="tab-content">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Gestión de Usuarios</h2>
+                <button class="btn-action btn-add" onclick="openModal('modalUser')">+ agrega usuario</button>
+            </div>
+            <table id="table-usr">
+                <thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Acción</th></tr></thead>
+                <tbody>
+                    <tr><td>José Miguel Ardila</td><td>jose@mail.com</td><td>Admin</td><td>-</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="background-color: #7d8c6a; color: white; padding: 30px; border-radius: 20px; margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <h3 style="margin: 0; font-size: 1.5rem;">Redes Sociales</h3>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" width="35">
+                    <span style="font-size: 1.1rem;">José Miguel Ardila Rodriguez</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" width="35">
+                    <span style="font-size: 1.1rem;">Josemiguel_1323</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 15px; text-align: right;">
+                <div style="display: flex; align-items: center; gap: 12px; justify-content: flex-end;">
+                    <span style="font-size: 1.1rem;">Josemz.00rz@gmail.com</span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" width="35">
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; justify-content: flex-end;">
+                    <span style="font-size: 1.1rem;">3209304071</span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="35">
+                </div>
+                <p style="margin: 10px 0 0 0; font-weight: bold; font-size: 1.1rem;">Creador de la pagina: José Miguel Ardila Rodriguez</p>
+            </div>
+        </div>
+    </div> 
+
+</body>
+</html>
